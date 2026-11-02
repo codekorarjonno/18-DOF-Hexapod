@@ -1,0 +1,15 @@
+serial_bridge:
+  ros__parameters:
+    host: "auto"
+    mdns_name: "hexapod-esp.local"
+    port: 8888
+    scan: true
+    timeout: 0.2
+    echo_feedback: true
+    joint_states: true
+
+cmd_vel_bridge:
+  ros__parameters:
+    linear_deadband: 0.05
+    angular_deadband: 0.10
+    timeout: 0.6

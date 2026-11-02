@@ -1,0 +1,35 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 200
+    use_sim_time: true
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    position_controller:
+      type: position_controllers/JointGroupPositionController
+
+# one command array: legs 0..5 (coxa, femur, tibia), then the gripper
+position_controller:
+  ros__parameters:
+    use_sim_time: true
+    joints:
+      - leg0_coxa_joint
+      - leg0_femur_joint
+      - leg0_tibia_joint
+      - leg1_coxa_joint
+      - leg1_femur_joint
+      - leg1_tibia_joint
+      - leg2_coxa_joint
+      - leg2_femur_joint
+      - leg2_tibia_joint
+      - leg3_coxa_joint
+      - leg3_femur_joint
+      - leg3_tibia_joint
+      - leg4_coxa_joint
+      - leg4_femur_joint
+      - leg4_tibia_joint
+      - leg5_coxa_joint
+      - leg5_femur_joint
+      - leg5_tibia_joint
+      - gripper_joint

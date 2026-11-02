@@ -1,0 +1,205 @@
+<?xml version="1.0"?>
+<!--
+  hexapod_gz.urdf.xacro
+
+  The real robot model (hexapod_description) plus what Gazebo needs:
+  servo position control (gz_ros2_control), RPLIDAR C1, MPU6050 IMU,
+  ground-truth odometry and rubber-like feet.
+-->
+<robot name="hexapod" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="foot_mu" default="0.35"/>   <!-- foot friction -->
+
+  <xacro:include filename="$(find hexapod_description)/urdf/hexapod.urdf.xacro"/>
+
+  <!-- ===================== servos (ros2_control) ===================== -->
+  <ros2_control name="GazeboSimSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+    <joint name="leg0_coxa_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg0_femur_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg0_tibia_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg1_coxa_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg1_femur_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg1_tibia_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg2_coxa_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg2_femur_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg2_tibia_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg3_coxa_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg3_femur_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg3_tibia_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg4_coxa_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg4_femur_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg4_tibia_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg5_coxa_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg5_femur_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="leg5_tibia_joint">
+      <command_interface name="position"><param name="min">-1.1345</param><param name="max">1.1345</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="gripper_joint">
+      <command_interface name="position"><param name="min">0.0</param><param name="max">0.4363</param></command_interface>
+      <state_interface name="position"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <!-- mimic joint: state only, Gazebo moves it with gripper_joint -->
+    <joint name="gripper_right_joint">
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <gazebo>
+    <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(find hexapod_gazebo)/config/controllers.yaml</parameters>
+      <position_proportional_gain>0.5</position_proportional_gain>
+    </plugin>
+
+    <!-- perfect odometry (odom -> base_footprint), like rf2o on the real robot -->
+    <plugin filename="gz-sim-odometry-publisher-system" name="gz::sim::systems::OdometryPublisher">
+      <odom_frame>odom</odom_frame>
+      <robot_base_frame>base_footprint</robot_base_frame>
+      <odom_topic>odom</odom_topic>
+      <tf_topic>odom_tf</tf_topic>
+      <odom_publish_frequency>30</odom_publish_frequency>
+      <dimensions>3</dimensions>
+    </plugin>
+  </gazebo>
+
+  <!-- ===================== feet =====================
+       Friction 0.35 = a PLA tip on a hard floor, like the real robot.
+       The gait has no IK, so planted feet move on different arcs and push
+       against each other sideways. With grippy feet (0.7) that push needs
+       ~1.6 Nm at the femur, more than an MG996R gives (1.2 Nm): the servos
+       stall and the legs drag. Real PLA feet slip, so the push never builds. -->
+  <gazebo reference="leg0_tibia_link">
+    <mu1>$(arg foot_mu)</mu1><mu2>$(arg foot_mu)</mu2><kp>1e6</kp><kd>100</kd><minDepth>0.0005</minDepth><maxVel>0.1</maxVel>
+  </gazebo>
+  <gazebo reference="leg1_tibia_link">
+    <mu1>$(arg foot_mu)</mu1><mu2>$(arg foot_mu)</mu2><kp>1e6</kp><kd>100</kd><minDepth>0.0005</minDepth><maxVel>0.1</maxVel>
+  </gazebo>
+  <gazebo reference="leg2_tibia_link">
+    <mu1>$(arg foot_mu)</mu1><mu2>$(arg foot_mu)</mu2><kp>1e6</kp><kd>100</kd><minDepth>0.0005</minDepth><maxVel>0.1</maxVel>
+  </gazebo>
+  <gazebo reference="leg3_tibia_link">
+    <mu1>$(arg foot_mu)</mu1><mu2>$(arg foot_mu)</mu2><kp>1e6</kp><kd>100</kd><minDepth>0.0005</minDepth><maxVel>0.1</maxVel>
+  </gazebo>
+  <gazebo reference="leg4_tibia_link">
+    <mu1>$(arg foot_mu)</mu1><mu2>$(arg foot_mu)</mu2><kp>1e6</kp><kd>100</kd><minDepth>0.0005</minDepth><maxVel>0.1</maxVel>
+  </gazebo>
+  <gazebo reference="leg5_tibia_link">
+    <mu1>$(arg foot_mu)</mu1><mu2>$(arg foot_mu)</mu2><kp>1e6</kp><kd>100</kd><minDepth>0.0005</minDepth><maxVel>0.1</maxVel>
+  </gazebo>
+
+  <!-- ===================== RPLIDAR C1 ===================== -->
+  <gazebo reference="laser">
+    <sensor name="rplidar_c1" type="gpu_lidar">
+      <topic>scan</topic>
+      <gz_frame_id>laser</gz_frame_id>
+      <update_rate>10</update_rate>
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>720</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14159</min_angle>
+            <max_angle>3.14159</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.05</min>
+          <max>12.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </lidar>
+    </sensor>
+  </gazebo>
+
+  <!-- ===================== MPU6050 ===================== -->
+  <gazebo reference="imu_link">
+    <sensor name="mpu6050" type="imu">
+      <topic>imu</topic>
+      <gz_frame_id>imu_link</gz_frame_id>
+      <update_rate>100</update_rate>
+      <always_on>true</always_on>
+    </sensor>
+  </gazebo>
+
+</robot>
