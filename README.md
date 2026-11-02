@@ -12,6 +12,7 @@
 
 ## Contents
 
+- [Demo Video](#demo-video)
 - [Abstract](#abstract)
 - [1. Introduction](#1-introduction)
 - [2. Objectives](#2-objectives)
@@ -27,6 +28,13 @@
   - [3.9 Simulation](#39-simulation)
 - [4. Remaining Work](#4-remaining-work)
 - [5. Conclusion](#5-conclusion)
+- [Appendix: Technical Reference](#appendix-technical-reference)
+
+---
+
+## Demo Video
+
+[▶ Watch the demo video (2 min 48 s)](video/demo_video.mp4): walking, digital twin, live camera, SLAM mapping, autonomous navigation and the gripper.
 
 ---
 
@@ -161,3 +169,74 @@ The same robot model and gait run in a Gazebo simulation, where walking, mapping
 ## 5. Conclusion
 
 Five of the six objectives have been achieved, and the sixth works but still needs tuning. The hexapod was designed in SolidWorks, 3D printed in PLA+ and assembled with 18 servos, and it walks reliably in both the tripod and the wave gait, forward, backward and turning, with the operator able to switch between them. It is driven over Wi-Fi from a keyboard console while the Pi camera streams live video to the laptop, and its gripper grasps and carries a small container under teleoperation. The CAD-based 3D model moves together with the real robot in RViz as a digital twin, and the same walking, mapping and navigation run in a Gazebo simulation. The robot also builds 2D maps of its surroundings with the LiDAR and reaches goals autonomously with Nav2 after the operator approves the planned path, so mapping and navigation are largely in place. What remains is to tune the navigation for better accuracy and to add avoidance of static and dynamic obstacles, which will complete the last objective.
+
+---
+
+## Appendix: Technical Reference
+
+### Hardware
+
+| Component | Model | Qty | Purpose |
+|---|---|---|---|
+| Leg servos | MG995 | 12 | Leg joints |
+| Leg servos | MG996R | 6 | Leg joints |
+| Gripper servo | SG90 | 1 | Gripper open/close (GPIO 13), mounted at the back of the base |
+| Servo driver | PCA9685 (I2C, 16-ch) | 2 | Drives the 18 leg servos (addresses 0x40 and 0x41, 50 Hz) |
+| Microcontroller | ESP32 (current) / STM32 (planned) | 1 | Low-level servo and gait control |
+| Main computer | Raspberry Pi 5 | 1 | ROS 2 Jazzy, SLAM, navigation, high-level commands |
+| LiDAR | RPLIDAR C1 | 1 | Mapping and obstacle detection, mounted on top |
+| Camera | Raspberry Pi Camera v2 | 1 | Live first-person video (the camera side is the front) |
+| IMU | MPU6050 | 1 | Orientation (planned for odometry) |
+| Power | XL4005 buck converters | — | 5–6 V servo supply |
+
+### Leg layout
+
+```
+          front (camera)
+      0 ───────── 3
+      │           │
+      1           4
+      │           │
+      2 ───────── 5
+          back (gripper)
+```
+
+- Legs 0–2 (right side) on PCA9685 **0x40**, legs 3–5 (left side) on **0x41**
+- Tripod A = legs 0, 4, 2 · Tripod B = legs 3, 1, 5
+
+### Firmware commands (ESP32)
+
+The firmware accepts text commands over USB serial (115200) or Wi-Fi (TCP port 8888). Set your own Wi-Fi name and password in the sketch before flashing.
+
+| Command | Action |
+|---|---|
+| `w` / `s` | Walk forward / backward |
+| `a` / `d` | Turn left / right in place |
+| `x` | Stop and settle into stance |
+| `tripod` / `wave` | Choose the gait |
+| `g` / `r` / `grip` | Grab / release / toggle the gripper |
+| `1`, `1 d` | One gait cycle (forward, or turning right, etc.) |
+| `h` / `c` / `p` | Stance / center all joints / print pose |
+| `t` | Test each leg in turn |
+| `swing` / `turn` / `lift` / `tuck` / `stance` / `speed` `<value>` | Gait tuning |
+| `twin on` / `twin off` | Joint reports for the RViz digital twin |
+| `navgait wave` / `navgait tripod` | Gait used by Nav2 (saved) |
+| `navsteps` / `navtsteps <n>` | Rest stand every n cycles during navigation, wave / tripod |
+| `fdrift` / `bdrift <value>` | Straight-line correction forward / backward (−10..10, saved) |
+| `?` | Show all commands |
+
+### Software
+
+- Arduino IDE (ESP32 firmware): `Adafruit_PWMServoDriver`, `ESP32Servo`
+- ROS 2 Jazzy on Raspberry Pi 5: `rplidar_ros`, `rf2o_laser_odometry`, `slam_toolbox`, Nav2
+- Gazebo Harmonic on the laptop for simulation
+- SolidWorks for the mechanical design
+
+### Repository contents
+
+The CAD files of the robot are in this repository:
+
+- `Hexapod_full_assembly.SLDASM`: the full SolidWorks assembly
+- Printed parts: `ghost_spider_base`, `spider_base_cut`, `roof`, `box`, `bracket`, `holder`, `horn`, `legpiece`, `long_leg`, `d`, `trial` (`.SLDPRT`)
+- Electronics models: `Perfect_MG996r.SLDPRT`, `PCA9685 16.SLDPRT`, `RPLIDAR C1.SLDPRT`, `Raspberry-Pi-5.step`, `Shield ESP32.step`, `ESP-EYE v2.step`, `300W 20A DC-DC Buck Converter Step Down.step`
+- `images/`: figures used in this README
