@@ -33,7 +33,7 @@ link_packages() {  # $1 = folder with our packages, $2 = workspace
   done
 }
 
-import_and_build() {  # $1 = .repos file, $2 = workspace
+import_and_build() {  # $1 = .repos file, $2 = workspace, $3 = extra rosdep args (optional)
   echo "== Downloading third-party packages"
   vcs import --skip-existing "$2/src" < "$1"
   echo "== Installing dependencies (rosdep)"
@@ -41,7 +41,7 @@ import_and_build() {  # $1 = .repos file, $2 = workspace
   rosdep update
   # shellcheck disable=SC1091
   source /opt/ros/jazzy/setup.bash
-  rosdep install --from-paths "$2/src" --ignore-src -y --rosdistro jazzy
+  rosdep install --from-paths "$2/src" --ignore-src -y --rosdistro jazzy ${3:-}
   echo "== Building (colcon)"
   cd "$2" && colcon build
 }

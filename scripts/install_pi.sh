@@ -10,12 +10,17 @@ WS="$HOME/ros2_ws"
 source "$REPO/scripts/common.sh"
 
 install_ros ros-jazzy-ros-base
-sudo apt install -y python3-colcon-meson python3-jinja2 python3-ply python3-yaml \
-                    libyaml-dev libgnutls28-dev libssl-dev tmux
+# libcamera (Raspberry Pi fork) is built from source with meson
+sudo apt install -y python3-colcon-meson meson ninja-build pkg-config \
+                    python3-jinja2 python3-ply python3-yaml libyaml-dev \
+                    libgnutls28-dev openssl libssl-dev libudev-dev libevent-dev \
+                    libdrm-dev libjpeg-dev libtiff-dev libdw-dev libunwind-dev tmux
 
 echo "== Linking the hexapod packages into $WS/src"
 link_packages "$REPO/raspberry_pi/ros2_ws/src" "$WS"
-import_and_build "$REPO/raspberry_pi/hexapod_pi.repos" "$WS"
+# libcamera has no package.xml (colcon builds it with meson): keep rosdep from
+# installing the apt libcamera on top of it
+import_and_build "$REPO/raspberry_pi/hexapod_pi.repos" "$WS" "--skip-keys=libcamera"
 
 echo "== Serial / USB access for the ESP32 and the lidar"
 sudo usermod -aG dialout "$USER"
