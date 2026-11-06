@@ -1,0 +1,156 @@
+# Hexapod changes on top of Nav2's own default nav2_params.yaml  -  REAL robot, LIGHT mode.
+# nav.launch.py loads the installed defaults and merges this file over them.
+#
+# Light mode (low CPU = low current on the Pi, so the USB-powered ESP32 keeps running):
+#   only planner_server, controller_server and bt_navigator run
+#   (+ map_server and AMCL when navigating on a saved map).
+#   No behavior / smoother / velocity_smoother / collision_monitor /
+#   waypoint_follower / docking servers. Slow update rates, 2D costmaps.
+#
+# The robot walks straight (w/s) or turns in place (a/d), slowly:
+#   while navigating it always uses the wave gait and stands before every
+#   change of direction,
+# so the controller turns to face the path first, then walks along it, and
+# Nav2 is told to be patient before deciding the robot is stuck.
+#
+# Start the robot where the map was started (map origin, facing the same way),
+# or use "2D Pose Estimate" in RViz.
+
+amcl:
+  ros__parameters:
+    base_frame_id: base_footprint
+    odom_frame_id: odom
+    global_frame_id: map
+    scan_topic: scan
+    laser_max_range: 12.0          # RPLIDAR C1
+    laser_min_range: 0.15
+    max_beams: 60
+    min_particles: 200
+    max_particles: 500
+    update_min_d: 0.05             # the robot is slow: update often
+    update_min_a: 0.1
+    transform_tolerance: 1.0
+    set_initial_pose: true         # starts where the map was started
+    initial_pose:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      yaw: 0.0
+
+bt_navigator:
+  ros__parameters:
+    global_frame: map
+    robot_base_frame: base_footprint
+    transform_tolerance: 1.0
+    bt_loop_duration: 20
+    navigators: ["navigate_to_pose"]
+    navigate_to_pose:
+      plugin: "nav2_bt_navigator::NavigateToPoseNavigator"
+    # default_nav_to_pose_bt_xml is set by nav.launch.py (config/nav_lite_bt.xml)
+
+controller_server:
+  ros__parameters:
+    controller_frequency: 5.0            # Pi 5: lighter load, the gait is slow anyway
+    costmap_update_timeout: 1.0
+    progress_checker:
+      # turning in place counts as progress too (the hexapod turns slowly)
+      plugin: "nav2_controller::PoseProgressChecker"
+      required_movement_radius: 0.05     # 5 cm walked ...
+      required_movement_angle: 0.3       # ... or ~17 deg turned
+      movement_time_allowance: 90.0      # within 90 s (stands + slow gait)
+    general_goal_checker:
+      stateful: True
+      plugin: "nav2_controller::SimpleGoalChecker"
+      xy_goal_tolerance: 0.30            # "close enough": within 30 cm of the goal = done (fewer last-moment turns)
+      yaw_goal_tolerance: 3.14           # ignore the goal's facing: no final turn (fewer commands)
+    # turn in place towards the path, then follow it walking straight
+    FollowPath:
+      plugin: "nav2_rotation_shim_controller::RotationShimController"
+      primary_controller: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
+      angular_dist_threshold: 0.60       # rad (~35 deg) off the path -> stop and turn
+      angular_disengage_threshold: 0.15  # ...and turn until within ~9 deg, so one turn is enough
+      forward_sampling_distance: 0.3
+      rotate_to_heading_angular_vel: 0.3
+      max_angular_accel: 1.0
+      simulate_ahead_time: 1.0
+      rotate_to_goal_heading: false      # no extra turn at the goal
+      desired_linear_vel: 0.06
+      lookahead_dist: 0.6                # aim further ahead: smoother, fewer corrections
+      min_lookahead_dist: 0.4
+      max_lookahead_dist: 0.9
+      lookahead_time: 2.0
+      transform_tolerance: 1.0           # Pi + rf2o: TF can lag (error 102 otherwise)
+      use_velocity_scaled_lookahead_dist: false
+      min_approach_linear_velocity: 0.03
+      approach_velocity_scaling_dist: 0.3
+      use_collision_detection: true      # stops before obstacles in the local costmap
+      max_allowed_time_to_collision_up_to_carrot: 2.0
+      use_regulated_linear_velocity_scaling: false
+      use_cost_regulated_linear_velocity_scaling: false
+      use_rotate_to_heading: false       # the shim does the turning
+      allow_reversing: false
+      max_robot_pose_search_dist: 10.0
+
+planner_server:
+  ros__parameters:
+    expected_planner_frequency: 0.5
+    planner_plugins: ["GridBased"]
+    # Theta*: straight lines between corners (few turns) instead of a grid staircase
+    GridBased:
+      plugin: "nav2_theta_star_planner::ThetaStarPlanner"
+      how_many_corners: 8
+      w_euc_cost: 1.0
+      w_traversal_cost: 2.0
+      use_final_approach_orientation: false
+      allow_unknown: true
+
+local_costmap:
+  local_costmap:
+    ros__parameters:
+      global_frame: odom
+      robot_base_frame: base_footprint
+      transform_tolerance: 1.0
+      update_frequency: 2.0
+      publish_frequency: 1.0
+      rolling_window: true
+      width: 2
+      height: 2
+      resolution: 0.05
+      robot_radius: 0.30                 # feet reach ~0.29 m from the centre
+      plugins: ["obstacle_layer", "inflation_layer"]   # 2D, no voxel grid
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: true
+        observation_sources: scan
+        scan:
+          topic: /scan
+          data_type: "LaserScan"
+          marking: true
+          clearing: true
+          max_obstacle_height: 2.0
+          obstacle_min_range: 0.25       # ignore the robot itself (gripper, cables, legs)
+          obstacle_max_range: 2.5
+          raytrace_min_range: 0.0
+          raytrace_max_range: 3.0
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 4.0
+        inflation_radius: 0.45
+
+global_costmap:
+  global_costmap:
+    ros__parameters:
+      global_frame: map
+      robot_base_frame: base_footprint
+      transform_tolerance: 1.0
+      update_frequency: 0.5
+      publish_frequency: 0.5
+      robot_radius: 0.30
+      plugins: ["static_layer", "inflation_layer"]     # live obstacles: local costmap
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: True
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 4.0
+        inflation_radius: 0.45

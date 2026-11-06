@@ -1,0 +1,4 @@
+camera_ros  https://github.com/christianrauch/camera_ros.git  8f792e2
+libcamera  https://github.com/raspberrypi/libcamera.git  6c1dd9d5
+rf2o_laser_odometry  https://github.com/MAPIRlab/rf2o_laser_odometry.git  b38c68e
+sllidar_ros2  https://github.com/Slamtec/sllidar_ros2.git  3430009
