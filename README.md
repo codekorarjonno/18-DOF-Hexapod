@@ -13,6 +13,7 @@
 ## Contents
 
 - [Demo Video](#demo-video)
+- [Setup](#setup)
 - [Abstract](#abstract)
 - [1. Introduction](#1-introduction)
 - [2. Objectives](#2-objectives)
@@ -35,6 +36,18 @@
 ## Demo Video
 
 [▶ Watch the demo video (2 min 48 s)](video/demo_video.mp4): walking, digital twin, live camera, SLAM mapping, autonomous navigation and the gripper.
+
+---
+
+## Setup
+
+```bash
+git clone https://github.com/codekorarjonno/18-DOF-Hexapod.git
+bash 18-DOF-Hexapod/scripts/install_laptop.sh   # on the laptop
+bash 18-DOF-Hexapod/scripts/install_pi.sh       # on the Raspberry Pi 5
+```
+
+Each script installs ROS 2 Jazzy, the third-party packages and all dependencies, builds the workspace and adds the shortcuts. Step-by-step instructions, firmware flashing and the everyday commands are in **[SETUP.md](SETUP.md)**.
 
 ---
 
@@ -234,9 +247,22 @@ The firmware accepts text commands over USB serial (115200) or Wi-Fi (TCP port 8
 
 ### Repository contents
 
-The CAD files of the robot are in this repository:
+```
+18-DOF-Hexapod/
+├── solidworks/      SolidWorks design (open Hexapod_full_assembly.SLDASM)
+├── ros2_ws/src/     laptop ROS 2 packages: hexapod_bringup, hexapod_description, hexapod_gazebo
+├── raspberry_pi/    Pi ROS 2 packages (+ hexapod_control, hexapod_mapping), map, shortcuts, camera script
+├── firmware/        ESP32 firmware (Hexapod_ESP32_v2.ino)
+├── maps/            saved SLAM maps (real room and Gazebo)
+├── scripts/         install_laptop.sh, install_pi.sh, laptop shortcuts
+├── hexapod.repos    third-party packages for the laptop (raspberry_pi/hexapod_pi.repos for the Pi)
+├── SETUP.md         step-by-step setup
+├── images/          figures used in this README
+└── video/           demo video
+```
+
+`solidworks/` contains:
 
 - `Hexapod_full_assembly.SLDASM`: the full SolidWorks assembly
 - Printed parts: `ghost_spider_base`, `spider_base_cut`, `roof`, `box`, `bracket`, `holder`, `horn`, `legpiece`, `long_leg`, `d`, `trial` (`.SLDPRT`)
 - Electronics models: `Perfect_MG996r.SLDPRT`, `PCA9685 16.SLDPRT`, `RPLIDAR C1.SLDPRT`, `Raspberry-Pi-5.step`, `Shield ESP32.step`, `ESP-EYE v2.step`, `300W 20A DC-DC Buck Converter Step Down.step`
-- `images/`: figures used in this README

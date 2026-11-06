@@ -1,0 +1,10 @@
+# Downloaded packages the laptop workspace needs (imported by scripts/install_laptop.sh)
+repositories:
+  sllidar_ros2:
+    type: git
+    url: https://github.com/Slamtec/sllidar_ros2.git
+    version: 3430009
+  rf2o_laser_odometry:
+    type: git
+    url: https://github.com/MAPIRlab/rf2o_laser_odometry.git
+    version: b38c68e

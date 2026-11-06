@@ -1,0 +1,19 @@
+# Downloaded packages the Raspberry Pi workspace needs (imported by scripts/install_pi.sh)
+# Versions are the exact commits running on the robot.
+repositories:
+  sllidar_ros2:
+    type: git
+    url: https://github.com/Slamtec/sllidar_ros2.git
+    version: 3430009
+  rf2o_laser_odometry:
+    type: git
+    url: https://github.com/MAPIRlab/rf2o_laser_odometry.git
+    version: b38c68e
+  camera_ros:
+    type: git
+    url: https://github.com/christianrauch/camera_ros.git
+    version: 8f792e2
+  libcamera:
+    type: git
+    url: https://github.com/raspberrypi/libcamera.git
+    version: 6c1dd9d5
